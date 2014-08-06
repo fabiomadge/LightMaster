@@ -71,9 +71,10 @@ void buttonWatch(){
     uint8_t s = 0xFF;
     while(s != 0) s--;
 
+    //button pressed and won't flow over
     if(!PORTAbits.RA2 && pressed != 0xFFFF) pressed++;
     else{
-        //short press
+        //was pressed before and there is no leftover from a longpress
         if(pressed > 0 && recLong == 0) shortPress();
         recLong = 0;
         pressed = 0;
@@ -84,7 +85,7 @@ void buttonWatch(){
         //long press
         longPress();
         pressed = 0;
-        recLong++;
+        if(recLong < 0xFF) recLong++;
     }
 }
 
