@@ -112,7 +112,14 @@ void sendByte(uint8_t byte){
 
     if(SSP2CON2bits.ACKSTAT){  //Error; No Ack
         LATC =  0b0001111;
-        while(1) continue;
+        while(1){
+            uint16_t s = 0xFFFF;
+            while(s != 0) s--;
+            LATC =  0b0000000;
+            s = 0xFFFF;
+            while(s != 0) s--;
+            LATC =  0b0001111;
+        };
     }
 }
 

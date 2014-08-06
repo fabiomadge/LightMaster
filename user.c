@@ -24,10 +24,18 @@ void InitApp(void)
 {
     TRISC = 0;                                          //all pins are outputs
 
+    //pot
     TRISAbits.TRISA4 = 1;
     ANSELAbits.ANSA4 = 1;
+
+    //switch
+    TRISAbits.TRISA2 = 1;
+    ANSELAbits.ANSA2 = 0;
+
     ADCON0 = 0b00001101;
     ADCON1 = 0b00010000;
+
+    LATC = 0b0000000;
 
     configI2C();
 }

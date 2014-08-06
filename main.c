@@ -15,6 +15,8 @@
 #include "user.h"          /* User funct/params, such as InitApp */
 #include "i2c.h"
 
+#define MAXPHASE 5
+
 /******************************************************************************/
 /* User Global Variable Declaration                                           */
 /******************************************************************************/
@@ -25,6 +27,12 @@ void forth();
 void back();
 void wait();
 void CalcUp();
+void buttonWatch();
+void shortPress();
+void longPress();
+
+uint8_t phase;
+uint16_t pressed;
 
 /******************************************************************************/
 /* Main Program                                                               */
@@ -37,42 +45,55 @@ int main()
     /* Initialize I/O and Peripherals for application */
     InitApp();
 
-    LATC =  0b0000101;
+    phase = 0;
+    pressed = 0;
 
+    //Wait for initialization to finish
     uint32_t s = 0x0000FFFF;
     while(s != 0) s--;
 
-    LATC =  0b0001010;
 
-    sendStateMachine(4);
+    //sendStateMachine(4);
 
-    LATC =  0b0001111;
 
-    LATC =  0b0001000;                                   //start the rotation by setting DS4 ON - rotate from the right to left
 
     while (1) {
-        forth();
-        back();
+        buttonWatch();
     }
 
     return 0;
 
 }
 
-void forth(){
-    LATC =  0b0001000;
-    while(!STATUSbits.C){
-        wait();
-        LATC >> = 1;
+void buttonWatch(){
+    static uint8_t recLong = 0;
+
+    uint8_t s = 0xFF;
+    while(s != 0) s--;
+
+    if(!PORTAbits.RA2 && pressed != 0xFFFF) pressed++;
+    else{
+        //short press
+        if(pressed > 0 && recLong == 0) shortPress();
+        recLong = 0;
+        pressed = 0;
+    }
+
+    //400ms
+    if(pressed > 0x400){
+        //long press
+        longPress();
+        pressed = 0;
+        recLong++;
     }
 }
 
-void back(){
-    LATC =  0b0000010;
-    while(LATCbits.LATC3 == 0){
-        wait();
-        LATC << = 1;
-    }
+void shortPress(){
+    LATC = 0;
+}
+
+void longPress(){
+    LATC++;
 }
 
 void wait(){
