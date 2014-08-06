@@ -1,0 +1,14 @@
+*.obj
+build/*
+disassembly/*
+dist/*
+funclist
+l.obj
+nbproject/*.mk
+nbproject/Makefile-genesis.properties
+nbproject/project.properties
+nbproject/Package*.bash
+
+*/.DS_Store
+
+Makefile
