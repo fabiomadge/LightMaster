@@ -4,7 +4,7 @@ Sample I2C master implementation for testing PIC software controling a LED ring.
 
 ## Setup
 
-The sources are delivered in the form of a MPLAB X project. Building should ba as easy as hitting build.
+The sources are delivered in the form of a MPLAB X project. Building should be as easy as hitting build.
 
 ## Hardware
 
