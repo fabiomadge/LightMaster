@@ -14,8 +14,9 @@
 #include "system.h"        /* System funct/params, like osc/peripheral config */
 #include "user.h"          /* User funct/params, such as InitApp */
 #include "i2c.h"
+#include "manager.h"
 
-#define MAXPHASE 5
+#define MAXPHASE 10
 
 /******************************************************************************/
 /* User Global Variable Declaration                                           */
@@ -90,11 +91,13 @@ void buttonWatch(){
 }
 
 void shortPress(){
-    LATC = 0;
+    playPhase(phase);
 }
 
 void longPress(){
-    LATC++;
+    phase+1 >= MAXPHASE ? phase = 0 : phase++;
+    //ifphase++;
+    LATC = phase;
 }
 
 void wait(){
@@ -120,8 +123,8 @@ void CalcUp(){
     while (GO) continue;
 
     if(prev != ADRESH){
-        if(prev == 0xFF && ADRESH != 0xFF) sendStateMachine(0);
-        if(prev != 0xFF && ADRESH == 0xFF) sendStateMachine(1);
+        if(prev == 0xFF && ADRESH != 0xFF) /*sendStateMachine(0)*/;
+        if(prev != 0xFF && ADRESH == 0xFF) /*sendStateMachine(1)*/;
         prev = ADRESH;
         Colors col = {
             {0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
