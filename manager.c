@@ -32,7 +32,7 @@ void playPhase(int i){
 void on(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 0x01, 0x01, 0x01, 8, 0, 25, 10};
+    const uint8_t glob[] = {1, 0x01, 0x01, 0x01, 1, 0, 255, 255};
     global((mach.global), &glob);
     for(int i = 0; i < 6; i++){
         mach.led0[i] = 0xFF;
@@ -41,12 +41,12 @@ void on(){
         mach.led3[i] = 0xFF;
     }
     mach.counter = 0x00;
-    mach.config = 0x00;
+    mach.config = 0b00000000;
     for(uint8_t i = 6; i < 9; i++){
         uint8_t val = 0;
         switch(i){
-            case 6: val = 255; break; //dimm
-            case 7: val = 2;   break; //state
+            case 6: val = 2;   break; //state
+            case 7: val = 255; break; //dimm
             case 8: val = 0;   break; //count
         }
         mach.led0[i] = val;

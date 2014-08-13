@@ -75,11 +75,12 @@ void configI2C(){
 
 void sendStateMachine(Machine m){
     last = m;
-    //sendBlob();
+
     uint8_t ar[10];
     ar[0] = m.counter;
     for(uint8_t i = 0; i < 8; i++) ar[i+1] = m.global[i];
-    ar[9] = m.config,
+    ar[9] = m.config;
+
     sendArray(ar, 10, 31);
     sendArray(m.led0, 9, 64);
     sendArray(m.led1, 9, 80);
