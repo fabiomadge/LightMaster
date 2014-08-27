@@ -9,7 +9,6 @@ void sendArray(const uint8_t [], uint8_t, uint8_t);
 void I2CWait();
 void I2CStart();
 void I2CStop();
-void sendBlob();
 
 //const Machine m0 = {
 //    {1, 0x01, 0x01, 0x01, 8, 0, 25, 10},
@@ -76,21 +75,22 @@ void configI2C(){
 void sendStateMachine(Machine m){
     last = m;
 
-    uint8_t ar[10];
+    uint8_t ar[11];
     ar[0] = m.counter;
     for(uint8_t i = 0; i < 8; i++) ar[i+1] = m.global[i];
     ar[9] = m.config;
+    ar[10] = m.updateDelay;
 
-    sendArray(ar, 10, 31);
+    sendArray(ar, 11, 31);
     sendArray(m.led0, 9, 64);
     sendArray(m.led1, 9, 80);
     sendArray(m.led2, 9, 96);
     sendArray(m.led3, 9, 112);
 }
 
-void updateStateMachien(Machine m){
-    uint8_t val[46];
-    uint8_t id[46];
+void updateStateMachine(Machine m){
+    uint8_t val[47];
+    uint8_t id[47];
 
     uint8_t length = 0;
 
@@ -114,6 +114,13 @@ void updateStateMachien(Machine m){
         val[length] = m.config;
         id[length]  = 40;
         last.config = m.config;
+        length++;
+    }
+
+    if(m.updateDelay != last.updateDelay){
+        val[length] = m.updateDelay;
+        id[length]  = 41;
+        last.updateDelay = m.updateDelay;
         length++;
     }
 
@@ -158,7 +165,7 @@ void updateStateMachien(Machine m){
         //account for first elem
         interval++;
 
-        uint8_t valBuff[46];
+        uint8_t valBuff[47];
         for(int i = 0; i < interval; i++){
             valBuff[i] = val[done+i];
         }
@@ -167,17 +174,17 @@ void updateStateMachien(Machine m){
     }
 }
 
-void updateColors(Colors c){
-    uint8_t arr[] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
-    sendArray(c.led0, 6, 64);
-    sendArray(c.led1, 6, 80);
-    sendArray(c.led2, 6, 96);
-    sendArray(c.led3, 6, 112);
-}
-
-void updateTimings(uint8_t ts[]){
-    sendArray(ts, 3, 37);
-}
+//void updateColors(Colors c){
+//    const uint8_t arr[] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+//    sendArray(c.led0, 6, 64);
+//    sendArray(c.led1, 6, 80);
+//    sendArray(c.led2, 6, 96);
+//    sendArray(c.led3, 6, 112);
+//}
+//
+//void updateTimings(uint8_t ts[]){
+//    sendArray(ts, 3, 37);
+//}
 
 void sendArray(const uint8_t arr[], uint8_t l, uint8_t offset){
     I2CStart();
