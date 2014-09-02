@@ -18,4 +18,4 @@ By pressing the button for a longer time, every ≈400ms the next animation is s
 
 ## Structure
 
-The main loop decides by watching to button, when and what animation to play. It passes this information to the [*manager.c*](../blob/master/manager.c) which holds the acutal state machine. It is send and updated by using the functions offered by [*i2c.c*](../blob/master/i2c.c).
+The [main loop](../master/main.c) decides by watching to button, when and what animation to play. It passes this information to the [*manager.c*](../master/manager.c) which holds the acutal state machine. It is send and updated by using the functions offered by [*i2c.c*](../master/i2c.c).
