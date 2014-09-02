@@ -125,7 +125,7 @@ void pairing(){
         mach.led2[i] = 0xFF;
         mach.led3[i] = 0xFF;
     }
-    mach.counter = 0;
+    mach.counter = 102;
     mach.config = 0b00100000;
     mach.updateDelay = 54;
     for(uint8_t i = 6; i < 9; i++){
