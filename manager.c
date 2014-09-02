@@ -58,9 +58,9 @@ void on(){
     for(uint8_t i = 6; i < 9; i++){
         uint8_t val = 0;
         switch(i){
-            case 6: val = 0;   break; //state
+            case 6: val = 0; break; //state
             case 7: val = 0; break; //dimm
-            case 8: val = 0;   break; //count
+            case 8: val = 0; break; //count
         }
         mach.led0[i] = val;
         mach.led1[i] = val;
@@ -94,9 +94,9 @@ void off(){
     for(uint8_t i = 6; i < 9; i++){
         uint8_t val = 0;
         switch(i){
-            case 6: val = 0;   break; //state
+            case 6: val = 0; break; //state
             case 7: val = 0; break; //dimm
-            case 8: val = 0;   break; //count
+            case 8: val = 0; break; //count
         }
         mach.led0[i] = val;
         mach.led1[i] = val;
@@ -131,9 +131,9 @@ void pairing(){
     for(uint8_t i = 6; i < 9; i++){
         uint8_t val = 0;
         switch(i){
-            case 6: val = 0;   break; //state
-            case 7: val = 0;   break; //dimm
-            case 8: val = 0;   break; //count
+            case 6: val = 0; break; //state
+            case 7: val = 0; break; //dimm
+            case 8: val = 0; break; //count
         }
         mach.led0[i] = val;
         mach.led1[i] = val;
@@ -163,9 +163,9 @@ void pairing(){
     for(uint8_t i = 6; i < 9; i++){
         uint8_t val = 0;
         switch(i){
-            case 6: val = 4;   break; //state
-            case 7: val = 0;   break; //dimm
-            case 8: val = 0;   break; //count
+            case 6: val = 4; break; //state
+            case 7: val = 0; break; //dimm
+            case 8: val = 0; break; //count
         }
         mach.led0[i] = val;
         mach.led1[i] = val;
@@ -195,7 +195,7 @@ void play(){
         uint8_t val = 0;
         switch(i){
             case 6: val = 3;   break; //state
-            case 7: val = 255;   break; //dimm
+            case 7: val = 255; break; //dimm
             case 8: val = 0;   break; //count
         }
         mach.led0[i] = val;
@@ -211,10 +211,6 @@ void play(){
     mach.counter = 0;
     mach.config = 0b10100000;
     updateStateMachine(mach);
-
-    // Machine ml;
-    // clean(&ml);
-    // sendStateMachine(ml);
 }
 
 void pause(){
@@ -234,9 +230,9 @@ void pause(){
     for(uint8_t i = 6; i < 9; i++){
         uint8_t val = 0;
         switch(i){
-            case 6: val = 3;   break; //state
-            case 7: val = 255;   break; //dimm
-            case 8: val = 0;   break; //count
+            case 6: val = 3;  break; //state
+            case 7: val = 255 break; //dimm
+            case 8: val = 0;  break; //count
         }
         mach.led0[i] = val;
         mach.led1[i] = val;
@@ -251,20 +247,15 @@ void pause(){
     mach.counter = 0;
     mach.config = 0b10100000;
     updateStateMachine(mach);
-
-    // Machine ml;
-    // clean(&ml);
-    // sendStateMachine(ml);
-
 }
 
-// void volumeUp(){
-//     onewheel();
-// }
+//is currently in a testing branch of the led board pic
+void volumeUp(){
+}
 
-// void volumeDown(){
-//     davewheel();
-// }
+//is currently in a testing branch of the led board pic
+void volumeDown(){
+}
 
 //two orange pulses
 void batteryLow(){
@@ -290,9 +281,9 @@ void batteryLow(){
     for(uint8_t i = 6; i < 9; i++){
         uint8_t val = 0;
         switch(i){
-            case 6: val = 0;   break; //state
+            case 6: val = 0; break; //state
             case 7: val = 0; break; //dimm
-            case 8: val = 0;   break; //count
+            case 8: val = 0; break; //count
         }
         mach.led0[i] = val;
         mach.led1[i] = val;
@@ -327,9 +318,9 @@ void batteryCritical(){
     for(uint8_t i = 6; i < 9; i++){
         uint8_t val = 0;
         switch(i){
-            case 6: val = 0;   break; //state
+            case 6: val = 0; break; //state
             case 7: val = 0; break; //dimm
-            case 8: val = 0;   break; //count
+            case 8: val = 0; break; //count
         }
         mach.led0[i] = val;
         mach.led1[i] = val;
@@ -363,9 +354,9 @@ void charging(){
     for(uint8_t i = 6; i < 9; i++){
         uint8_t val = 0;
         switch(i){
-            case 6: val = 0;   break; //state
-            case 7: val = 0;   break; //dimm
-            case 8: val = 0;   break; //count
+            case 6: val = 0; break; //state
+            case 7: val = 0; break; //dimm
+            case 8: val = 0; break; //count
         }
         mach.led0[i] = val;
         mach.led1[i] = val;
@@ -414,22 +405,6 @@ void charging(){
 
     mach.config = 0b11000000;
     updateStateMachine(mach);
-}
-
-void clean(Machine * m){
-    m->config = 0;
-    m->counter = 0;
-    for(int i = 0; i < 8; i++) m->global[i] = 0;
-    for(int i = 0; i < 9; i++){
-        m->led0[i] = 0;
-        m->led1[i] = 0;
-        m->led2[i] = 0;
-        m->led3[i] = 0;
-    }
-}
-
-void global(uint8_t g[], const uint8_t a[]){
-    for(int i = 0; i < 8; i++) g[i] = a[i];
 }
 
 void davewheel(){
@@ -490,9 +465,9 @@ void onewheel(){
     for(uint8_t i = 6; i < 9; i++){
         uint8_t val = 0;
         switch(i){
-            case 6: val = 0;   break; //state
+            case 6: val = 0; break; //state
             case 7: val = 0; break; //dimm
-            case 8: val = 0;   break; //count
+            case 8: val = 0; break; //count
         }
         mach.led0[i] = val;
         mach.led1[i] = val;
@@ -529,9 +504,9 @@ void twowheel(){
     for(uint8_t i = 6; i < 9; i++){
         uint8_t val = 0;
         switch(i){
-            case 6: val = 0;   break; //state
+            case 6: val = 0; break; //state
             case 7: val = 0; break; //dimm
-            case 8: val = 0;   break; //count
+            case 8: val = 0; break; //count
         }
         mach.led0[i] = val;
         mach.led1[i] = val;
@@ -627,4 +602,23 @@ void strobe(){
     mach.counter = 0;
     mach.config = 0b10100000;
     updateStateMachine(mach);
+}
+
+//enshures a defined state for the machine
+void clean(Machine * m){
+    m->config = 0;
+    m->counter = 0;
+    m->updateDelay = 0;
+    for(int i = 0; i < 8; i++) m->global[i] = 0;
+    for(int i = 0; i < 9; i++){
+        m->led0[i] = 0;
+        m->led1[i] = 0;
+        m->led2[i] = 0;
+        m->led3[i] = 0;
+    }
+}
+
+//overwrites the content of  array g with the ones of array a
+void global(uint8_t g[], const uint8_t a[]){
+    for(int i = 0; i < 8; i++) g[i] = a[i];
 }

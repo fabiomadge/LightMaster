@@ -19,10 +19,8 @@
 #define MAXPHASE 13
 
 /******************************************************************************/
-/* User Global Variable Declaration                                           */
+/* User Global Variable Declaration and Prototypes                            */
 /******************************************************************************/
-
-/* i.e. uint8_t <variable_name>; */
 
 void buttonWatch();
 void shortPress();
@@ -49,11 +47,7 @@ int main()
     uint32_t s = 0x0000FFFF;
     while(s != 0) s--;
 
-
-    //sendStateMachine(4);
-
-
-
+    //main loop
     while (1) {
         buttonWatch();
     }
@@ -62,6 +56,7 @@ int main()
 
 }
 
+//polls the button and differentiates between long and short press
 void buttonWatch(){
     static uint8_t recLong = 0;
 
@@ -86,12 +81,13 @@ void buttonWatch(){
     }
 }
 
+//plays the currently selected animation
 void shortPress(){
     playPhase(phase);
 }
 
+//selects new animation
 void longPress(){
     phase+1 >= MAXPHASE ? phase = 0 : phase++;
-    //ifphase++;
     LATC = phase;
 }

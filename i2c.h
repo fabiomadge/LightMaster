@@ -23,16 +23,6 @@ typedef struct Machine{
     uint8_t updateDelay;// 41
 } Machine;
 
-//State    enum{AT_MIN, RAMP_UP, AT_MAX, RAMP_DOWN}
-
-typedef struct Colors{
-    //{MS_Red, LS_Red, MS_Green, LS_Green, MS_Blue, LS_Blue}
-    uint8_t led0[6];   // 64 - 70
-    uint8_t led1[6];   // 80 - 86
-    uint8_t led2[6];   // 96 -102
-    uint8_t led3[6];   // 112-118
-} Colors;
-
 void configI2C();
 void sendStateMachine(Machine);
 void updateStateMachine(Machine);

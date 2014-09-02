@@ -10,51 +10,6 @@ void I2CWait();
 void I2CStart();
 void I2CStop();
 
-//const Machine m0 = {
-//    {1, 0x01, 0x01, 0x01, 8, 0, 25, 10},
-//    {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 1,  55, 0},
-//    {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 1,  55, 0},
-//    {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 1,  55, 0},
-//    {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 1,  55, 0}
-//};
-//
-//const Machine m1 = {
-//    {1, 0x7F, 0x7F, 0x7F, 255, 0, 0, 0},
-//    {0xFF, 0x00, 0xFF, 0x00, 0xFF, 0xFF, 4,  0x01, 0},
-//    {0xFF, 0x00, 0xFF, 0x00, 0xFF, 0xFF, 4,  0x01, 0},
-//    {0xFF, 0x00, 0xFF, 0x00, 0xFF, 0xFF, 4,  0x01, 0},
-//    {0xFF, 0x00, 0xFF, 0x00, 0xFF, 0xFF, 4,  0x01, 0}
-//};
-//
-////1 coinituous led
-//const Machine m2 = {
-//    {1, 0x01, 0x01, 0x01, 3, 173, 85, 0},
-//    {0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 1,  0,  0},
-//    {0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 3,255,  0},
-//    {0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0,  0,  1},
-//    {0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0,  0, 87}
-//};
-//
-////2 coinituous leds
-//const Machine m3 = {
-//    {1, 0x7F, 0x7F, 0x7F, 3, 86, 85, 86},
-//    {0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 1,  0, 0},
-//    {0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 2,255, 0},
-//    {0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 3,255, 0},
-//    {0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0,  0, 0}
-//};
-//
-////3 coinituous leds
-//const Machine m4 = {
-//    {1, 0x01, 0x01, 0x01, 3, 0, 85, 173},
-//    {0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 1,  0,  0},
-//    {0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 2,255,  1},
-//    {0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 2,255, 87},
-//    {0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 3,255,  0}
-//};
-//
-//Machine machines[10];
-
 Machine last;
 
 void configI2C(){
@@ -64,14 +19,9 @@ void configI2C(){
     SSP2CON1 = 0b00101000;
     SSP2ADD = 39; // 16000 kHz /(4 × (39 + 1)) = 100kHz
     SSP2STAT = 0b10000000; //disable Slewratecontrol
-
-//    machines[0] = m0;
-//    machines[1] = m1;
-//    machines[2] = m2;
-//    machines[3] = m3;
-//    machines[4] = m4;
 }
 
+//sends every byte in the machine to the slave and saves it in *last*
 void sendStateMachine(Machine m){
     last = m;
 
@@ -88,12 +38,14 @@ void sendStateMachine(Machine m){
     sendArray(m.led3, 9, 112);
 }
 
+//checks for delta to *last* and updates accordingly after updating *last*
 void updateStateMachine(Machine m){
     uint8_t val[47];
     uint8_t id[47];
 
     uint8_t length = 0;
 
+    //asamble update list
     if(m.counter != last.counter){
         val[length] = m.counter;
         id[length]  = 31;
@@ -151,12 +103,13 @@ void updateStateMachine(Machine m){
             if(newVal != lastVal){
                 val[length] = newVal;
                 id[length]  = 64 + (i*16) + j;
-                *(lastLeds + j) = newVal;
+                *(lastLeds + j) = newVal;  //overwrites last with new
                 length++;
             }
         }
     }
 
+    //work thew update list
     uint8_t done = 0;
     while(done < length){
         uint8_t interval = 0;
@@ -174,18 +127,7 @@ void updateStateMachine(Machine m){
     }
 }
 
-//void updateColors(Colors c){
-//    const uint8_t arr[] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
-//    sendArray(c.led0, 6, 64);
-//    sendArray(c.led1, 6, 80);
-//    sendArray(c.led2, 6, 96);
-//    sendArray(c.led3, 6, 112);
-//}
-//
-//void updateTimings(uint8_t ts[]){
-//    sendArray(ts, 3, 37);
-//}
-
+//one transmission session according to doc
 void sendArray(const uint8_t arr[], uint8_t l, uint8_t offset){
     I2CStart();
     uint8_t payload = (0x00 | I2C_SLAVE);
@@ -197,6 +139,7 @@ void sendArray(const uint8_t arr[], uint8_t l, uint8_t offset){
     I2CStop();
 }
 
+//send single byte
 void sendByte(uint8_t byte){
     SSP2BUF = byte; // Move data to SSPBUF
     I2CWait();
@@ -214,17 +157,20 @@ void sendByte(uint8_t byte){
     }
 }
 
+//wait for i2c interrupt flag to turn off
 void I2CWait(){
     while(!SSP2IF) continue;
     SSP2IF = 0;
 }
 
+//start i2c session
 void I2CStart(){
     SSP2IF = 0;
     SSP2CON2bits.SEN = 1;  // Generate Start Condition
     I2CWait();
 }
 
+//end i2c session
 void I2CStop(){
     SSP2CON2bits.PEN = 1;// Generate Stop Condition
     I2CWait();
