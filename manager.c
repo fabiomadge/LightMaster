@@ -231,7 +231,7 @@ void pause(){
         uint8_t val = 0;
         switch(i){
             case 6: val = 3;  break; //state
-            case 7: val = 255 break; //dimm
+            case 7: val = 255;break; //dimm
             case 8: val = 0;  break; //count
         }
         mach.led0[i] = val;
