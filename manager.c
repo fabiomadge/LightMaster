@@ -44,7 +44,7 @@ void playPhase(int i){
 void on(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 0x09, 0x09, 0x09, 5, 10, 51, 15};
+    const uint8_t glob[] = {1, 5, 10, 51, 15};
     global((mach.global), glob);
     for(int i = 2; i < 4; i++){
         mach.led0[i] = 0xFF;
@@ -80,7 +80,7 @@ void on(){
 void off(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 0x09, 0x09, 0x09, 5, 10, 51, 15};
+    const uint8_t glob[] = {1, 5, 10, 51, 15};
     global((mach.global), glob);
     for(int i = 0; i < 2; i++){
         mach.led0[i] = 0xFF;
@@ -117,7 +117,7 @@ void off(){
 void pairing(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 0x09, 0x09, 0x09, 5, 0, 51, 0};
+    const uint8_t glob[] = {1, 5, 0, 51, 0};
     global((mach.global), glob);
     for(int i = 4; i < 6; i++){
         mach.led0[i] = 0xFF;
@@ -180,7 +180,7 @@ void pairing(){
 void play(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 0x09, 0x09, 0x09, 15, 255, 17, 0};
+    const uint8_t glob[] = {1, 15, 255, 17, 0};
     global((mach.global), glob);
     for(int i = 0; i < 6; i++){
         mach.led0[i] = 0xFF;
@@ -216,7 +216,7 @@ void play(){
 void pause(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 0x09, 0x09, 0x09, 3, 255, 85, 0};
+    const uint8_t glob[] = {1, 3, 255, 85, 0};
     global((mach.global), glob);
     for(int i = 0; i < 6; i++){
         mach.led0[i] = 0xFF;
@@ -261,7 +261,7 @@ void volumeDown(){
 void batteryLow(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 0x09, 0x09, 0x09, 5, 0, 51, 0};
+    const uint8_t glob[] = {1, 5, 0, 51, 0};
     global((mach.global), glob);
     for(int i = 0; i < 4; i++){
         mach.led0[i] = 0xFF;
@@ -304,7 +304,7 @@ void batteryLow(){
 void batteryCritical(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 0x09, 0x09, 0x09, 5, 0, 51, 0};
+    const uint8_t glob[] = {1, 5, 0, 51, 0};
     global((mach.global), glob);
     for(int i = 0; i < 2; i++){
         mach.led0[i] = 0xFF;
@@ -340,7 +340,7 @@ void batteryCritical(){
 void charging(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 0x39, 0x39, 0x39, 3, 173, 85, 0};
+    const uint8_t glob[] = {1, 3, 173, 85, 0};
     global((mach.global), glob);
     for(int i = 0; i < 2; i++){
         mach.led0[i] = 0xFF;
@@ -410,7 +410,7 @@ void charging(){
 void davewheel(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 0x39, 0x39, 0x39, 8, 0, 25, 10};
+    const uint8_t glob[] = {1, 8, 0, 25, 10};
     global((mach.global), glob);
     for(int i = 0; i < 6; i++){
         mach.led0[i] = 0xFF;
@@ -451,7 +451,7 @@ void davewheel(){
 void onewheel(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 0x39, 0x39, 0x39, 3, 173, 85, 0};
+    const uint8_t glob[] = {1, 3, 173, 85, 0};
     global((mach.global), glob);
     for(int i = 0; i < 6; i++){
         mach.led0[i] = 0xFF;
@@ -490,7 +490,7 @@ void onewheel(){
 void twowheel(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 0x39, 0x39, 0x39, 3, 86, 85, 86};
+    const uint8_t glob[] = {1, 3, 86, 85, 86};
     global((mach.global), glob);
     for(int i = 0; i < 6; i++){
         mach.led0[i] = 0xFF;
@@ -528,7 +528,7 @@ void twowheel(){
 void threewheel(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 0x39, 0x39, 0x39, 3, 0, 85, 173};
+    const uint8_t glob[] = {1, 3, 0, 85, 173};
     global((mach.global), glob);
     for(int i = 0; i < 6; i++){
         mach.led0[i] = 0xFF;
@@ -571,7 +571,7 @@ void disco(){
 void strobe(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 0x7F, 0x7F, 0x7F, 255, 64, 1, 0};
+    const uint8_t glob[] = {1, 255, 64, 1, 0};
     global((mach.global), glob);
     for(int i = 0; i < 6; i++){
         mach.led0[i] = 0xFF;
@@ -609,7 +609,7 @@ void clean(Machine * m){
     m->config = 0;
     m->counter = 0;
     m->updateDelay = 0;
-    for(int i = 0; i < 8; i++) m->global[i] = 0;
+    for(int i = 0; i < 5; i++) m->global[i] = 0;
     for(int i = 0; i < 9; i++){
         m->led0[i] = 0;
         m->led1[i] = 0;
@@ -620,5 +620,5 @@ void clean(Machine * m){
 
 //overwrites the content of  array g with the ones of array a
 void global(uint8_t g[], const uint8_t a[]){
-    for(int i = 0; i < 8; i++) g[i] = a[i];
+    for(int i = 0; i < 5; i++) g[i] = a[i];
 }

@@ -3,6 +3,7 @@
 #include "i2c.h"
 
 #define I2C_SLAVE  0x2A
+#define MACHINESIZE 44
 
 void sendByte(uint8_t);
 void sendArray(const uint8_t [], uint8_t, uint8_t);
@@ -25,13 +26,13 @@ void configI2C(){
 void sendStateMachine(Machine m){
     last = m;
 
-    uint8_t ar[11];
+    uint8_t ar[8];
     ar[0] = m.counter;
-    for(uint8_t i = 0; i < 8; i++) ar[i+1] = m.global[i];
-    ar[9] = m.config;
-    ar[10] = m.updateDelay;
+    for(uint8_t i = 0; i < 5; i++) ar[i+1] = m.global[i];
+    ar[6] = m.config;
+    ar[7] = m.updateDelay;
 
-    sendArray(ar, 11, 31);
+    sendArray(ar, 8, 31);
     sendArray(m.led0, 9, 64);
     sendArray(m.led1, 9, 80);
     sendArray(m.led2, 9, 96);
@@ -40,8 +41,8 @@ void sendStateMachine(Machine m){
 
 //checks for delta to *last* and updates accordingly after updating *last*
 void updateStateMachine(Machine m){
-    uint8_t val[47];
-    uint8_t id[47];
+    uint8_t val[MACHINESIZE];
+    uint8_t id[MACHINESIZE];
 
     uint8_t length = 0;
 
@@ -53,7 +54,7 @@ void updateStateMachine(Machine m){
         length++;
     }
 
-    for(int i = 0; i < 8; i++){
+    for(int i = 0; i < 5; i++){
         if(m.global[i] != last.global[i]){
             val[length] = m.global[i];
             id[length]  = 32+i;
@@ -64,14 +65,14 @@ void updateStateMachine(Machine m){
 
     if(m.config != last.config){
         val[length] = m.config;
-        id[length]  = 40;
+        id[length]  = 37;
         last.config = m.config;
         length++;
     }
 
     if(m.updateDelay != last.updateDelay){
         val[length] = m.updateDelay;
-        id[length]  = 41;
+        id[length]  = 38;
         last.updateDelay = m.updateDelay;
         length++;
     }
@@ -118,7 +119,7 @@ void updateStateMachine(Machine m){
         //account for first elem
         interval++;
 
-        uint8_t valBuff[47];
+        uint8_t valBuff[MACHINESIZE];
         for(int i = 0; i < interval; i++){
             valBuff[i] = val[done+i];
         }
