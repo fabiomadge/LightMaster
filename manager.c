@@ -40,213 +40,226 @@ void playPhase(int i){
     }
 }
 
-//white pulses
+//green pulses
 void on(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 5, 10, 51, 15};
-    global((mach.global), glob);
-    for(int i = 2; i < 4; i++){
-        mach.led0[i] = 0xFF;
-        mach.led1[i] = 0xFF;
-        mach.led2[i] = 0xFF;
-        mach.led3[i] = 0xFF;
-    }
-    mach.counter = 0x00;
-    mach.config = 0b00100000;
-    mach.updateDelay = 54;
-    for(uint8_t i = 6; i < 9; i++){
-        uint8_t val = 0;
-        switch(i){
-            case 6: val = 0; break; //state
-            case 7: val = 0; break; //dimm
-            case 8: val = 0; break; //count
-        }
-        mach.led0[i] = val;
-        mach.led1[i] = val;
-        mach.led2[i] = val;
-        mach.led3[i] = val;
+
+    mach.Counter =           0;
+    mach.Enable =            1;
+    mach.StepSize =          5;
+    mach.AtMin_NumFrames =  10;
+    mach.Ramp_NumFrames =   51;
+    mach.AtMax_NumFrames =  15;
+    mach.Lock =              0;
+    mach.Up =                0;
+    mach.Log =               1;
+    mach.UpdateDelay =      54;
+
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].Brightness.Red   = 0x0000;
+        mach.LEDs[i].Brightness.Green = 0xFFFF;
+        mach.LEDs[i].Brightness.Blue  = 0x0000;
     }
 
-    sendStateMachine(mach);
-    
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].State   = 0;
+        mach.LEDs[i].LogDim  = 0;
+        mach.LEDs[i].Count   = 0;
+    }
+
+    sendStateMachine(&mach);
+
     for(uint32_t i = 0; i < 0x001FFFFF; i++) continue;
 
-    mach.counter = 0;
-    mach.config = 0b10100000;
-    updateStateMachine(mach);
+    //fix the dimm level to the bottom
+    mach.Counter = 0;
+    mach.Lock =    1;
+    mach.Up =      0;
+
+    updateStateMachine(&mach);
 }
 
+//red pulses
 void off(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 5, 10, 51, 15};
-    global((mach.global), glob);
-    for(int i = 0; i < 2; i++){
-        mach.led0[i] = 0xFF;
-        mach.led1[i] = 0xFF;
-        mach.led2[i] = 0xFF;
-        mach.led3[i] = 0xFF;
-    }
-    mach.counter = 0x00;
-    mach.config = 0b00100000;
-    mach.updateDelay = 54;
-    for(uint8_t i = 6; i < 9; i++){
-        uint8_t val = 0;
-        switch(i){
-            case 6: val = 0; break; //state
-            case 7: val = 0; break; //dimm
-            case 8: val = 0; break; //count
-        }
-        mach.led0[i] = val;
-        mach.led1[i] = val;
-        mach.led2[i] = val;
-        mach.led3[i] = val;
+
+    mach.Counter =           0;
+    mach.Enable =            1;
+    mach.StepSize =          5;
+    mach.AtMin_NumFrames =  10;
+    mach.Ramp_NumFrames =   51;
+    mach.AtMax_NumFrames =  15;
+    mach.Lock =              0;
+    mach.Up =                0;
+    mach.Log =               1;
+    mach.UpdateDelay =      54;
+
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].Brightness.Red   = 0xFFFF;
+        mach.LEDs[i].Brightness.Green = 0x0000;
+        mach.LEDs[i].Brightness.Blue  = 0x0000;
     }
 
-    sendStateMachine(mach);
-    
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].State   = 0;
+        mach.LEDs[i].LogDim  = 0;
+        mach.LEDs[i].Count   = 0;
+    }
+
+    sendStateMachine(&mach);
+
     for(uint32_t i = 0; i < 0x001FFFFF; i++) continue;
 
-    mach.counter = 0;
-    mach.config = 0b10100000;
-    updateStateMachine(mach);
+    //fix the dimm level to the bottom
+    mach.Counter = 0;
+    mach.Lock =    1;
+    mach.Up =      0;
+
+    updateStateMachine(&mach);
 }
 
 //blue cross
 void pairing(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 5, 0, 51, 0};
-    global((mach.global), glob);
-    for(int i = 4; i < 6; i++){
-        mach.led0[i] = 0xFF;
-        mach.led1[i] = 0xFF;
-        mach.led2[i] = 0xFF;
-        mach.led3[i] = 0xFF;
+
+    mach.Counter =         102;
+    mach.Enable =            1;
+    mach.StepSize =          5;
+    mach.AtMin_NumFrames =   0;
+    mach.Ramp_NumFrames =   51;
+    mach.AtMax_NumFrames =   0;
+    mach.Lock =              0;
+    mach.Up =                0;
+    mach.Log =               1;
+    mach.UpdateDelay =      54;
+
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].Brightness.Red   = 0x0000;
+        mach.LEDs[i].Brightness.Green = 0x0000;
+        mach.LEDs[i].Brightness.Blue  = 0xFFFF;
     }
-    mach.counter = 102;
-    mach.config = 0b00100000;
-    mach.updateDelay = 54;
-    for(uint8_t i = 6; i < 9; i++){
-        uint8_t val = 0;
-        switch(i){
-            case 6: val = 0; break; //state
-            case 7: val = 0; break; //dimm
-            case 8: val = 0; break; //count
+
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].Count   = 0;
+
+        if(i%2 == 0){
+            mach.LEDs[i].State   = 0;
+            mach.LEDs[i].LogDim  = 0;
         }
-        mach.led0[i] = val;
-        mach.led1[i] = val;
-        mach.led2[i] = val;
-        mach.led3[i] = val;
+        else{
+            mach.LEDs[i].State   =   2;
+            mach.LEDs[i].LogDim  = 255;
+        }
     }
 
-    mach.led1[6] = 2;
-    mach.led1[7] = 255;
+    sendStateMachine(&mach);
 
-    mach.led3[6] = 2;
-    mach.led3[7] = 255;
-
-
-    sendStateMachine(mach);
-    
+    //wait for successful pairing
     for(uint32_t i = 0; i < 0x001FFFFF; i++) continue;
 
-    mach.counter = 0;
-    mach.config = 0b11100000;
-    updateStateMachine(mach);
+    //light up all leds
+    mach.Counter = 0;
+    mach.Lock = 1;
+    mach.Up = 1;
+    mach.Log = 1;
+
+    updateStateMachine(&mach);
 
     for(uint32_t i = 0; i < 0x000FFFFF; i++) continue;
 
+    //turn it all down again
     mach.counter = 0x39;
 
-    for(uint8_t i = 6; i < 9; i++){
-        uint8_t val = 0;
-        switch(i){
-            case 6: val = 4; break; //state
-            case 7: val = 0; break; //dimm
-            case 8: val = 0; break; //count
-        }
-        mach.led0[i] = val;
-        mach.led1[i] = val;
-        mach.led2[i] = val;
-        mach.led3[i] = val;
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].State  =   4;
+        mach.LEDs[i].LogDim =   0;
+        mach.LEDs[i].Count  =   0;
     }
 
     sendStateMachine(mach);
 }
 
-
+//slow ramp up followed by quick ramp down
 void play(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 15, 255, 17, 0};
-    global((mach.global), glob);
-    for(int i = 0; i < 6; i++){
-        mach.led0[i] = 0xFF;
-        mach.led1[i] = 0xFF;
-        mach.led2[i] = 0xFF;
-        mach.led3[i] = 0xFF;
-    }
-    mach.counter = 0x7F;
-    mach.config = 0b00100000;
-    mach.updateDelay = 8;
-    for(uint8_t i = 6; i < 9; i++){
-        uint8_t val = 0;
-        switch(i){
-            case 6: val = 3;   break; //state
-            case 7: val = 255; break; //dimm
-            case 8: val = 0;   break; //count
-        }
-        mach.led0[i] = val;
-        mach.led1[i] = val;
-        mach.led2[i] = val;
-        mach.led3[i] = val;
+
+    mach.Counter =        0x7F;
+    mach.Enable =            1;
+    mach.StepSize =         15;
+    mach.AtMin_NumFrames = 255;
+    mach.Ramp_NumFrames =   17;
+    mach.AtMax_NumFrames =   0;
+    mach.Lock =              0;
+    mach.Up =                0;
+    mach.Log =               1;
+    mach.UpdateDelay =       8;
+
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].Brightness.Red   = 0xFFFF;
+        mach.LEDs[i].Brightness.Green = 0xFFFF;
+        mach.LEDs[i].Brightness.Blue  = 0xFFFF;
     }
 
-    sendStateMachine(mach);
-    
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].State   =   3;
+        mach.LEDs[i].LogDim  = 255;
+        mach.LEDs[i].Count   =   0;
+    }
+
+    sendStateMachine(&mach);
+
     for(uint32_t i = 0; i < 0x0004FFFF; i++) continue;
 
-    mach.counter = 0;
-    mach.config = 0b10100000;
-    updateStateMachine(mach);
+    //fix the dimm level to the bottom
+    mach.Counter = 0;
+    mach.Lock =    1;
+    mach.Up =      0;
+
+    updateStateMachine(&mach);
 }
 
+//quick ramp up followed by slow ramp down
 void pause(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 3, 255, 85, 0};
-    global((mach.global), glob);
-    for(int i = 0; i < 6; i++){
-        mach.led0[i] = 0xFF;
-        mach.led1[i] = 0xFF;
-        mach.led2[i] = 0xFF;
-        mach.led3[i] = 0xFF;
-    }
-    mach.counter = 44;
-    mach.config = 0b00100000;
-    mach.updateDelay = 8;
-    for(uint8_t i = 6; i < 9; i++){
-        uint8_t val = 0;
-        switch(i){
-            case 6: val = 3;  break; //state
-            case 7: val = 255;break; //dimm
-            case 8: val = 0;  break; //count
-        }
-        mach.led0[i] = val;
-        mach.led1[i] = val;
-        mach.led2[i] = val;
-        mach.led3[i] = val;
+
+    mach.Counter =          44;
+    mach.Enable =            1;
+    mach.StepSize =          3;
+    mach.AtMin_NumFrames = 255;
+    mach.Ramp_NumFrames =   85;
+    mach.AtMax_NumFrames =   0;
+    mach.Lock =              0;
+    mach.Up =                0;
+    mach.Log =               1;
+    mach.UpdateDelay =       8;
+
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].Brightness.Red   = 0xFFFF;
+        mach.LEDs[i].Brightness.Green = 0xFFFF;
+        mach.LEDs[i].Brightness.Blue  = 0xFFFF;
     }
 
-    sendStateMachine(mach);
-    
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].State   =   3;
+        mach.LEDs[i].LogDim  = 255;
+        mach.LEDs[i].Count   =   0;
+    }
+
+    sendStateMachine(&mach);
+
     for(uint32_t i = 0; i < 0x0004FFFF; i++) continue;
 
-    mach.counter = 0;
-    mach.config = 0b10100000;
-    updateStateMachine(mach);
+    //fix the dimm level to the bottom
+    mach.Counter = 0;
+    mach.Lock =    1;
+    mach.Up =      0;
+
+    updateStateMachine(&mach);
 }
 
 //is currently in a testing branch of the led board pic
@@ -261,307 +274,303 @@ void volumeDown(){
 void batteryLow(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 5, 0, 51, 0};
-    global((mach.global), glob);
-    for(int i = 0; i < 4; i++){
-        mach.led0[i] = 0xFF;
-        mach.led1[i] = 0xFF;
-        mach.led2[i] = 0xFF;
-        mach.led3[i] = 0xFF;
-    }
-    for(int i = 2; i < 3; i++){
-        mach.led0[i] = 0x7F;
-        mach.led1[i] = 0x7F;
-        mach.led2[i] = 0x7F;
-        mach.led3[i] = 0x7F;
-    }
-    mach.counter = 0x00;
-    mach.config = 0b00100000;
-    mach.updateDelay = 24;
-    for(uint8_t i = 6; i < 9; i++){
-        uint8_t val = 0;
-        switch(i){
-            case 6: val = 0; break; //state
-            case 7: val = 0; break; //dimm
-            case 8: val = 0; break; //count
-        }
-        mach.led0[i] = val;
-        mach.led1[i] = val;
-        mach.led2[i] = val;
-        mach.led3[i] = val;
+
+    mach.Counter =           0;
+    mach.Enable =            1;
+    mach.StepSize =          5;
+    mach.AtMin_NumFrames =   0;
+    mach.Ramp_NumFrames =   51;
+    mach.AtMax_NumFrames =   0;
+    mach.Lock =              0;
+    mach.Up =                0;
+    mach.Log =               1;
+    mach.UpdateDelay =      24;
+
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].Brightness.Red   = 0xFFFF;
+        mach.LEDs[i].Brightness.Green = 0xFFFF;
+        mach.LEDs[i].Brightness.Blue  = 0x0000;
     }
 
-    sendStateMachine(mach);
-    
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].State   = 0;
+        mach.LEDs[i].LogDim  = 0;
+        mach.LEDs[i].Count   = 0;
+    }
+
+    sendStateMachine(&mach);
+
     for(uint32_t i = 0; i < 0x000CFFFF; i++) continue;
 
-    mach.counter = 0;
-    mach.config = 0b10100000;
-    updateStateMachine(mach);
+    //fix the dimm level to the bottom
+    mach.Counter = 0;
+    mach.Lock =    1;
+    mach.Up =      0;
+
+    updateStateMachine(&mach);
 }
 
 //four short red pulses
 void batteryCritical(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 5, 0, 51, 0};
-    global((mach.global), glob);
-    for(int i = 0; i < 2; i++){
-        mach.led0[i] = 0xFF;
-        mach.led1[i] = 0xFF;
-        mach.led2[i] = 0xFF;
-        mach.led3[i] = 0xFF;
-    }
-    mach.counter = 0x00;
-    mach.config = 0b00100000;
-    mach.updateDelay = 16;
-    for(uint8_t i = 6; i < 9; i++){
-        uint8_t val = 0;
-        switch(i){
-            case 6: val = 0; break; //state
-            case 7: val = 0; break; //dimm
-            case 8: val = 0; break; //count
-        }
-        mach.led0[i] = val;
-        mach.led1[i] = val;
-        mach.led2[i] = val;
-        mach.led3[i] = val;
+
+    mach.Counter =           0;
+    mach.Enable =            1;
+    mach.StepSize =          5;
+    mach.AtMin_NumFrames =   0;
+    mach.Ramp_NumFrames =   51;
+    mach.AtMax_NumFrames =   0;
+    mach.Lock =              0;
+    mach.Up =                0;
+    mach.Log =               1;
+    mach.UpdateDelay =      16;
+
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].Brightness.Red   = 0xFFFF;
+        mach.LEDs[i].Brightness.Green = 0x0000;
+        mach.LEDs[i].Brightness.Blue  = 0x0000;
     }
 
-    sendStateMachine(mach);
-    
-    for(uint32_t i = 0; i < 0x000EFFFF; i++) continue;
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].State   = 0;
+        mach.LEDs[i].LogDim  = 0;
+        mach.LEDs[i].Count   = 0;
+    }
 
-    mach.counter = 0;
-    mach.config = 0b10100000;
-    updateStateMachine(mach);
+    sendStateMachine(&mach);
+
+    for(uint32_t i = 0; i < 0x000CFFFF; i++) continue;
+
+    //fix the dimm level to the bottom
+    mach.Counter = 0;
+    mach.Lock =    1;
+    mach.Up =      0;
+
+    updateStateMachine(&mach);
 }
 
 void charging(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 3, 173, 85, 0};
-    global((mach.global), glob);
-    for(int i = 0; i < 2; i++){
-        mach.led0[i] = 0xFF;
-        mach.led1[i] = 0xFF;
-        mach.led2[i] = 0xFF;
-        mach.led3[i] = 0xFF;
-    }
-    mach.counter = 0x00;
-    mach.config = 0b00000000;
-    mach.updateDelay = 8;
-    for(uint8_t i = 6; i < 9; i++){
-        uint8_t val = 0;
-        switch(i){
-            case 6: val = 0; break; //state
-            case 7: val = 0; break; //dimm
-            case 8: val = 0; break; //count
-        }
-        mach.led0[i] = val;
-        mach.led1[i] = val;
-        mach.led2[i] = val;
-        mach.led3[i] = val;
+
+    mach.Counter =           0;
+    mach.Enable =            1;
+    mach.StepSize =          3;
+    mach.AtMin_NumFrames = 173;
+    mach.Ramp_NumFrames =   85;
+    mach.AtMax_NumFrames =   0;
+    mach.Lock =              0;
+    mach.Up =                0;
+    mach.Log =               0;
+    mach.UpdateDelay =       8;
+
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].Brightness.Red   = 0xFFFF;
+        mach.LEDs[i].Brightness.Green = 0x0000;
+        mach.LEDs[i].Brightness.Blue  = 0x0000;
     }
 
-    mach.led0[6] = 1;
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].State   = 0;
+        mach.LEDs[i].LogDim  = 0;
+        mach.LEDs[i].Count   = 0;
+    }
 
-    mach.led1[6] = 3;
-    mach.led1[7] = 255;
+    mach.LEDs[0].State = 1;
+    mach.LEDs[1].State = 3;
+    mach.LEDs[1].LogDim = 255;
+    mach.LEDs[2].Count = 1;
+    mach.LEDs[3].Count = 87;
 
-    mach.led2[8] = 1;
+    sendStateMachine(&mach);
 
-    mach.led3[8] = 87;
+    for(uint32_t i = 0; i < 0x001FFFFF; i++) continue;
 
-    sendStateMachine(mach);
+    //fix the dimm level to the bottom
+    mach.Counter = 0;
+    mach.Lock =    1;
+    mach.Up =      0;
 
-    while(mach.led0[2] != 0xFF){
-        for(int i = 2; i < 4; i++){
-            mach.led0[i]++;
-            mach.led1[i]++;
-            mach.led2[i]++;
-            mach.led3[i]++;
-        }
+    updateStateMachine(&mach);
+
+    //fade to orange
+    while(mach.LEDs[0].Brightness.Green != 0xFFFF){
+        mach.LEDs[0].Brightness.Green += 0xFF;
+        mach.LEDs[1].Brightness.Green += 0xFF;
+        mach.LEDs[2].Brightness.Green += 0xFF;
+        mach.LEDs[3].Brightness.Green += 0xFF;
 
         for(uint32_t i = 0; i < 0x00000FFF; i++) continue;
 
-        updateStateMachine(mach);
-
+        updateStateMachine(&mach);
     }
 
-    while(mach.led0[0] != 0x00){
-        for(int i = 0; i < 2; i++){
-            mach.led0[i]--;
-            mach.led1[i]--;
-            mach.led2[i]--;
-            mach.led3[i]--;
-        }
+    //fade to green
+    while(mach.LEDs[0].Brightness.Red != 0x0000){
+        mach.LEDs[0].Brightness.Red -= 0xFF;
+        mach.LEDs[1].Brightness.Red -= 0xFF;
+        mach.LEDs[2].Brightness.Red -= 0xFF;
+        mach.LEDs[3].Brightness.Red -= 0xFF;
 
         for(uint32_t i = 0; i < 0x00000FFF; i++) continue;
 
-        updateStateMachine(mach);
-
+        updateStateMachine(&mach);
     }
 
-    mach.config = 0b11000000;
-    updateStateMachine(mach);
+    //stop spinning
+    mach.Lock = 1;
+    mach.Up =   1;
+
+    updateStateMachine(&mach);
 }
 
 void davewheel(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 8, 0, 25, 10};
-    global((mach.global), glob);
-    for(int i = 0; i < 6; i++){
-        mach.led0[i] = 0xFF;
-        mach.led1[i] = 0xFF;
-        mach.led2[i] = 0xFF;
-        mach.led3[i] = 0xFF;
-    }
-    mach.counter = 0x00;
-    mach.config = 0b00100000;
-    mach.updateDelay = 64;
-    for(uint8_t i = 6; i < 9; i++){
-        uint8_t val = 0;
-        switch(i){
-            case 6: val = 1;   break; //state
-            case 7: val = 175; break; //dimm
-            case 8: val = 0;   break; //count
-        }
-        mach.led0[i] = val;
-        mach.led1[i] = val;
-        mach.led2[i] = val;
-        mach.led3[i] = val;
+
+    mach.Counter =           0;
+    mach.Enable =            1;
+    mach.StepSize =          8;
+    mach.AtMin_NumFrames =   0;
+    mach.Ramp_NumFrames =   25;
+    mach.AtMax_NumFrames =  10;
+    mach.Lock =              0;
+    mach.Up =                0;
+    mach.Log =               1;
+    mach.UpdateDelay =      64;
+
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].Brightness.Red   = 0xFFFF;
+        mach.LEDs[i].Brightness.Green = 0xFFFF;
+        mach.LEDs[i].Brightness.Blue  = 0xFFFF;
     }
 
-    mach.led0[7] = 55;
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].State   =   1;
+        mach.LEDs[i].LogDim  = 175;
+        mach.LEDs[i].Count   =   0;
+    }
 
-    mach.led1[8] = 15;
+    mach.LEDs[0].LogDim =  55;
+    mach.LEDs[1].Count =   15;
+    mach.LEDs[2].State =    2;
+    mach.LEDs[2].LogDim = 255;
+    mach.LEDs[2].Count =    5;
+    mach.LEDs[3].State =    3;
+    mach.LEDs[3].Count =   10;
 
-    mach.led2[6] = 2;
-    mach.led2[7] = 255;
-    mach.led2[8] = 5;
 
-    mach.led3[6] = 3;
-    mach.led3[8] = 10;
-
-    sendStateMachine(mach);
+    sendStateMachine(&mach);
 }
 
 void onewheel(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 3, 173, 85, 0};
-    global((mach.global), glob);
-    for(int i = 0; i < 6; i++){
-        mach.led0[i] = 0xFF;
-        mach.led1[i] = 0xFF;
-        mach.led2[i] = 0xFF;
-        mach.led3[i] = 0xFF;
-    }
-    mach.counter = 0x00;
-    mach.config = 0b00000000;
-    mach.updateDelay = 8;
-    for(uint8_t i = 6; i < 9; i++){
-        uint8_t val = 0;
-        switch(i){
-            case 6: val = 0; break; //state
-            case 7: val = 0; break; //dimm
-            case 8: val = 0; break; //count
-        }
-        mach.led0[i] = val;
-        mach.led1[i] = val;
-        mach.led2[i] = val;
-        mach.led3[i] = val;
+
+    mach.Counter =           0;
+    mach.Enable =            1;
+    mach.StepSize =          3;
+    mach.AtMin_NumFrames = 173;
+    mach.Ramp_NumFrames =   85;
+    mach.AtMax_NumFrames =   0;
+    mach.Lock =              0;
+    mach.Up =                0;
+    mach.Log =               0;
+    mach.UpdateDelay =       8;
+
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].Brightness.Red   = 0xFFFF;
+        mach.LEDs[i].Brightness.Green = 0xFFFF;
+        mach.LEDs[i].Brightness.Blue  = 0xFFFF;
     }
 
-    mach.led0[6] = 1;
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].State   = 0;
+        mach.LEDs[i].LogDim  = 0;
+        mach.LEDs[i].Count   = 0;
+    }
 
-    mach.led1[6] = 3;
-    mach.led1[7] = 255;
+    mach.LEDs[0].State =    1;
+    mach.LEDs[1].State =    3;
+    mach.LEDs[1].LogDim = 255;
+    mach.LEDs[2].Count =    1;
+    mach.LEDs[3].Count =   87;
 
-    mach.led2[8] = 1;
 
-    mach.led3[8] = 87;
-
-    sendStateMachine(mach);
+    sendStateMachine(&mach);
 }
 
 void twowheel(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 3, 86, 85, 86};
-    global((mach.global), glob);
-    for(int i = 0; i < 6; i++){
-        mach.led0[i] = 0xFF;
-        mach.led1[i] = 0xFF;
-        mach.led2[i] = 0xFF;
-        mach.led3[i] = 0xFF;
-    }
-    mach.counter = 0x00;
-    mach.config = 0b00000000;
-    mach.updateDelay = 8;
-    for(uint8_t i = 6; i < 9; i++){
-        uint8_t val = 0;
-        switch(i){
-            case 6: val = 0; break; //state
-            case 7: val = 0; break; //dimm
-            case 8: val = 0; break; //count
-        }
-        mach.led0[i] = val;
-        mach.led1[i] = val;
-        mach.led2[i] = val;
-        mach.led3[i] = val;
+
+    mach.Counter =           0;
+    mach.Enable =            1;
+    mach.StepSize =          3;
+    mach.AtMin_NumFrames =  86;
+    mach.Ramp_NumFrames =   85;
+    mach.AtMax_NumFrames =  86;
+    mach.Lock =              0;
+    mach.Up =                0;
+    mach.Log =               0;
+    mach.UpdateDelay =       8;
+
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].Brightness.Red   = 0xFFFF;
+        mach.LEDs[i].Brightness.Green = 0xFFFF;
+        mach.LEDs[i].Brightness.Blue  = 0xFFFF;
     }
 
-    mach.led0[6] = 1;
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].State   = 0;
+        mach.LEDs[i].LogDim  = 0;
+        mach.LEDs[i].Count   = 0;
+    }
 
-    mach.led1[6] = 2;
-    mach.led1[7] = 255;
+    mach.LEDs[0].State =    1;
+    mach.LEDs[1].State =    2;
+    mach.LEDs[1].LogDim = 255;
+    mach.LEDs[2].State =    3;
+    mach.LEDs[2].LogDim = 255;
 
-    mach.led2[6] = 3;
-    mach.led2[7] = 255;
-
-    sendStateMachine(mach);
+    sendStateMachine(&mach);
 }
 
 void threewheel(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 3, 0, 85, 173};
-    global((mach.global), glob);
-    for(int i = 0; i < 6; i++){
-        mach.led0[i] = 0xFF;
-        mach.led1[i] = 0xFF;
-        mach.led2[i] = 0xFF;
-        mach.led3[i] = 0xFF;
-    }
-    mach.counter = 0x00;
-    mach.config = 0b00000000;
-    mach.updateDelay = 8;
-    for(uint8_t i = 6; i < 9; i++){
-        uint8_t val = 0;
-        switch(i){
-            case 6: val = 2;   break; //state
-            case 7: val = 255; break; //dimm
-            case 8: val = 0;   break; //count
-        }
-        mach.led0[i] = val;
-        mach.led1[i] = val;
-        mach.led2[i] = val;
-        mach.led3[i] = val;
+
+    mach.Counter =           0;
+    mach.Enable =            1;
+    mach.StepSize =          3;
+    mach.AtMin_NumFrames =   0;
+    mach.Ramp_NumFrames =   85;
+    mach.AtMax_NumFrames = 173;
+    mach.Lock =              0;
+    mach.Up =                0;
+    mach.Log =               0;
+    mach.UpdateDelay =       8;
+
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].Brightness.Red   = 0xFFFF;
+        mach.LEDs[i].Brightness.Green = 0xFFFF;
+        mach.LEDs[i].Brightness.Blue  = 0xFFFF;
     }
 
-    mach.led0[6] = 1;
-    mach.led0[7] = 0;
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].State   = 0;
+        mach.LEDs[i].LogDim  = 0;
+        mach.LEDs[i].Count   = 0;
+    }
 
-    mach.led1[8] = 1;
+    mach.LEDs[0].LogDim = 1;
+    mach.LEDs[0].State =  0;
+    mach.LEDs[1].Count =  1;
+    mach.LEDs[2].Count = 87;
+    mach.LEDs[3].State =  3;
 
-    mach.led2[8] = 87;
-
-    mach.led3[6] = 3;
-
-    sendStateMachine(mach);
+    sendStateMachine(&mach);
 }
 
 void disco(){
@@ -571,52 +580,62 @@ void disco(){
 void strobe(){
     Machine mach;
     clean(&mach);
-    const uint8_t glob[] = {1, 255, 64, 1, 0};
-    global((mach.global), glob);
-    for(int i = 0; i < 6; i++){
-        mach.led0[i] = 0xFF;
-        mach.led1[i] = 0xFF;
-        mach.led2[i] = 0xFF;
-        mach.led3[i] = 0xFF;
-    }
-    mach.counter = 0x00;
-    mach.config = 0b00100000;
-    mach.updateDelay = 0;
-    for(uint8_t i = 6; i < 9; i++){
-        uint8_t val = 0;
-        switch(i){
-            case 6: val = 2;   break; //state
-            case 7: val = 255; break; //dimm
-            case 8: val = 0;   break; //count
-        }
-        mach.led0[i] = val;
-        mach.led1[i] = val;
-        mach.led2[i] = val;
-        mach.led3[i] = val;
+
+    mach.Counter =           0;
+    mach.Enable =            1;
+    mach.StepSize =        255;
+    mach.AtMin_NumFrames =  64;
+    mach.Ramp_NumFrames =    1;
+    mach.AtMax_NumFrames =   0;
+    mach.Lock =              0;
+    mach.Up =                0;
+    mach.Log =               1;
+    mach.UpdateDelay =       0;
+
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].Brightness.Red   = 0xFFFF;
+        mach.LEDs[i].Brightness.Green = 0xFFFF;
+        mach.LEDs[i].Brightness.Blue  = 0xFFFF;
     }
 
-    sendStateMachine(mach);
-    
+    for(int i = 0; i < LED_COUNT; i++){
+        mach.LEDs[i].State   =   2;
+        mach.LEDs[i].LogDim  = 255;
+        mach.LEDs[i].Count   =   0;
+    }
+
+    sendStateMachine(&mach);
+
+    //keep it from making you crazy
     for(uint32_t i = 0; i < 0x001FFFFF; i++) continue;
 
-    mach.counter = 0;
-    mach.config = 0b10100000;
-    updateStateMachine(mach);
+    mach.Lock = 1;    
+
+    updateStateMachine(&mach);
 }
 
 //enshures a defined state for the machine
 void clean(Machine * m){
-    m->config = 0;
-    m->counter = 0;
-    m->updateDelay = 0;
-    for(int i = 0; i < 5; i++) m->global[i] = 0;
-    for(int i = 0; i < 9; i++){
-        m->led0[i] = 0;
-        m->led1[i] = 0;
-        m->led2[i] = 0;
-        m->led3[i] = 0;
+    m->Counter = 0;
+    m->Enable = 0;
+    m->StepSize = 0;
+    m->AtMin_NumFrames = 0;
+    m->Ramp_NumFrames = 0;
+    m->AtMax_NumFrames = 0;
+    m->Lock = 0;
+    m->Up = 0;
+    m->Log = 0;
+    m->UpdateDelay;
+    for(int i = 0; i < LED_COUNT; i++){
+        (*m).LEDs[i].Brightness.Red   = 0x0000;
+        (*m).LEDs[i].Brightness.Green = 0xFFFF;
+        (*m).LEDs[i].Brightness.Blue  = 0x0000;
+        (*m).LEDs[i].State   = 0;
+        (*m).LEDs[i].LogDim  = 0;
+        (*m).LEDs[i].Count   = 0;
     }
 }
+
 
 //overwrites the content of  array g with the ones of array a
 void global(uint8_t g[], const uint8_t a[]){
