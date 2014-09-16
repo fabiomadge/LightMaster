@@ -88,14 +88,14 @@ void updateStateMachine(const Machine * m){
     computeUpdate(value, adrss, &lastVal, MM_LED_UPDATE_DELAY_ADDR, &(last.UpdateDelay), &(m->UpdateDelay));
 
     //add led updates to the list
-    for(int i = 0; LED_COUNT; i++){
+    for(int i = 0; i < LED_COUNT; i++){
         uint8_t baseAddr = 64 + (i*16);
 
         uint8_t prvLed[LED_LENGTH];
         uint8_t newLed[LED_LENGTH];
 
-        getLED(&(last.LEDs[i]), &prvLed);
-        getLED(&((*m).LEDs[i]), &newLed);
+        getLED(&(last.LEDs[i]), prvLed);
+        getLED(&((*m).LEDs[i]), newLed);
 
         for(int j = 0; j < LED_LENGTH; j++){
             computeUpdate(value, adrss, &lastVal, baseAddr + j,  &(prvLed[j]),  &(newLed[j]));
@@ -115,7 +115,7 @@ void updateStateMachine(const Machine * m){
         for(int i = 0; i < interval; i++){
             valBuff[i] = value[done+i];
         }
-        sendArray(valBuff, interval, value[done]);
+        sendArray(valBuff, interval, adrss[done]);
         done+=interval;
     }
 
@@ -188,9 +188,9 @@ void getLED(const LED * source, uint8_t * aim){
 //generate config byte
 uint8_t getConfigByte(const Machine * source){
     uint8_t val = 0;
-    if((*source).Lock) val |= 0x01;
-    if((*source).Up)   val |= 0x02;
-    if((*source).Log)  val |= 0x04;
+    if((*source).Lock) val |= 0x80;
+    if((*source).Up)   val |= 0x40;
+    if((*source).Log)  val |= 0x20;
     return val;
 }
 

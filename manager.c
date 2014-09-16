@@ -171,7 +171,7 @@ void pairing(){
     for(uint32_t i = 0; i < 0x000FFFFF; i++) continue;
 
     //turn it all down again
-    mach.counter = 0x39;
+    mach.Counter = 0x39;
 
     for(int i = 0; i < LED_COUNT; i++){
         mach.LEDs[i].State  =   4;
@@ -179,7 +179,7 @@ void pairing(){
         mach.LEDs[i].Count  =   0;
     }
 
-    sendStateMachine(mach);
+    sendStateMachine(&mach);
 }
 
 //slow ramp up followed by quick ramp down
@@ -384,15 +384,6 @@ void charging(){
     mach.LEDs[3].Count = 87;
 
     sendStateMachine(&mach);
-
-    for(uint32_t i = 0; i < 0x001FFFFF; i++) continue;
-
-    //fix the dimm level to the bottom
-    mach.Counter = 0;
-    mach.Lock =    1;
-    mach.Up =      0;
-
-    updateStateMachine(&mach);
 
     //fade to orange
     while(mach.LEDs[0].Brightness.Green != 0xFFFF){
@@ -625,7 +616,7 @@ void clean(Machine * m){
     m->Lock = 0;
     m->Up = 0;
     m->Log = 0;
-    m->UpdateDelay;
+    m->UpdateDelay = 0;
     for(int i = 0; i < LED_COUNT; i++){
         (*m).LEDs[i].Brightness.Red   = 0x0000;
         (*m).LEDs[i].Brightness.Green = 0xFFFF;
