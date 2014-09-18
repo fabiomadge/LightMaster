@@ -20,7 +20,6 @@ void disco();
 void strobe();
 
 void clean(Machine *);
-void global(uint8_t g[], const uint8_t a[]);
 
 void playPhase(int i){
     switch(i){
@@ -606,6 +605,7 @@ void strobe(){
 }
 
 //enshures a defined state for the machine
+//also workaround for xc8 keeping a blank blueprint of machine for every animation
 void clean(Machine * m){
     m->Counter = 0;
     m->Enable = 0;
@@ -625,10 +625,4 @@ void clean(Machine * m){
         (*m).LEDs[i].LogDim  = 0;
         (*m).LEDs[i].Count   = 0;
     }
-}
-
-
-//overwrites the content of  array g with the ones of array a
-void global(uint8_t g[], const uint8_t a[]){
-    for(int i = 0; i < 5; i++) g[i] = a[i];
 }

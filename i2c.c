@@ -10,13 +10,14 @@
 #define LED_COUNT      4
 
 void sendByte(uint8_t);
-void sendArray(const uint8_t [], uint8_t, uint8_t);
 void I2CWait();
 void I2CStart();
 void I2CStop();
 
 void computeUpdate(uint8_t * value, uint8_t * adrss, uint8_t * lastVal, uint8_t adress, const uint8_t * prev, const uint8_t * new);
-void getLED(const LED * source, uint8_t * aim);
+void sendGlobals(const Machine * source);
+void sendLED(const LED * source, uint8_t offset);
+uint8_t getLED(const LED * source, uint8_t byteNo);
 uint8_t getConfigByte(const Machine * source);
 
 Machine last;
@@ -35,34 +36,11 @@ void sendStateMachine(const Machine * m){
     //save machine
     last = *m;
 
-    //assemble array of global parameters 
-    uint8_t globals[GLOBAL_LENGTH];
-    globals[0] = last.Counter;
-    globals[1] = last.Enable;
-    globals[2] = last.StepSize;
-    globals[3] = last.AtMin_NumFrames;
-    globals[4] = last.Ramp_NumFrames;
-    globals[5] = last.AtMax_NumFrames;
-    globals[6] = getConfigByte(&last);
-    globals[7] = last.UpdateDelay;
-
-    //shells for the byte sized parameters
-    uint8_t led0[LED_LENGTH];
-    uint8_t led1[LED_LENGTH];
-    uint8_t led2[LED_LENGTH];
-    uint8_t led3[LED_LENGTH];
-
-    //fill with information
-    getLED(&(last.LEDs[0]), led0);
-    getLED(&(last.LEDs[1]), led1);
-    getLED(&(last.LEDs[2]), led2);
-    getLED(&(last.LEDs[3]), led3);
-
-    sendArray(globals, GLOBAL_LENGTH, MM_LED_COUNTER_ADDR);
-    sendArray(led0, LED_LENGTH, MM_LED0_BASE_ADDR);
-    sendArray(led1, LED_LENGTH, MM_LED1_BASE_ADDR);
-    sendArray(led2, LED_LENGTH, MM_LED2_BASE_ADDR);
-    sendArray(led3, LED_LENGTH, MM_LED3_BASE_ADDR);
+    sendGlobals(m);
+    sendLED(&(last.LEDs[0]), MM_LED0_BASE_ADDR);
+    sendLED(&(last.LEDs[1]), MM_LED1_BASE_ADDR);
+    sendLED(&(last.LEDs[2]), MM_LED2_BASE_ADDR);
+    sendLED(&(last.LEDs[3]), MM_LED3_BASE_ADDR);
 }
 
 //checks for delta to *last* and updates accordingly after updating *last*
@@ -72,7 +50,7 @@ void updateStateMachine(const Machine * m){
 
     uint8_t lastVal = 0;
 
-    //asamble update list
+    //assemble update list
     computeUpdate(value, adrss, &lastVal, MM_LED_COUNTER_ADDR,         &(last.Counter),         &(m->Counter));
     computeUpdate(value, adrss, &lastVal, MM_LED_ENABLE_ADDR,          &(last.Enable),          &(m->Enable));
     computeUpdate(value, adrss, &lastVal, MM_LED_STEPSIZE_ADDR,        &(last.StepSize),        &(m->StepSize));
@@ -90,19 +68,18 @@ void updateStateMachine(const Machine * m){
     //add led updates to the list
     for(int i = 0; i < LED_COUNT; i++){
         uint8_t baseAddr = 64 + (i*16);
-
-        uint8_t prvLed[LED_LENGTH];
-        uint8_t newLed[LED_LENGTH];
-
-        getLED(&(last.LEDs[i]), prvLed);
-        getLED(&((*m).LEDs[i]), newLed);
+        uint8_t prvByte;
+        uint8_t newByte;
 
         for(int j = 0; j < LED_LENGTH; j++){
-            computeUpdate(value, adrss, &lastVal, baseAddr + j,  &(prvLed[j]),  &(newLed[j]));
+            prvByte = getLED(&(last.LEDs[i]), j);
+            newByte = getLED(&((*m).LEDs[i]), j);
+
+            computeUpdate(value, adrss, &lastVal, baseAddr + j,  &(prvByte),  &(newByte));
         }
     }
 
-    //work thew update list
+    //work through update list
     uint8_t done = 0;
     while(done < lastVal){
         uint8_t interval = 0;
@@ -111,11 +88,16 @@ void updateStateMachine(const Machine * m){
         //account for first elem
         interval++;
 
-        uint8_t valBuff[MACHINE_SIZE];
+        //send array
+        I2CStart();
+        uint8_t payload = (0x00 | I2C_SLAVE);
+        sendByte(payload); //Adress the LED Board
+        sendByte(adrss[done]);
         for(int i = 0; i < interval; i++){
-            valBuff[i] = value[done+i];
+            sendByte(value[done+i]);
         }
-        sendArray(valBuff, interval, adrss[done]);
+        I2CStop();
+
         done+=interval;
     }
 
@@ -123,17 +105,17 @@ void updateStateMachine(const Machine * m){
     last = *m;
 }
 
-//one transmission session according to doc
-void sendArray(const uint8_t arr[], uint8_t l, uint8_t offset){
-    I2CStart();
-    uint8_t payload = (0x00 | I2C_SLAVE);
-    sendByte(payload); //Adress the LED Board
-    sendByte(offset);
-    for(int i = 0; i < l; i++){
-        sendByte(arr[i]);
-    }
-    I2CStop();
-}
+// //one transmission session according to doc
+// void sendArray(const uint8_t arr[], uint8_t l, uint8_t offset){
+//     I2CStart();
+//     uint8_t payload = (0x00 | I2C_SLAVE);
+//     sendByte(payload); //Adress the LED Board
+//     sendByte(offset);
+//     for(int i = 0; i < l; i++){
+//         sendByte(arr[i]);
+//     }
+//     I2CStop();
+// }
 
 //send single byte
 void sendByte(uint8_t byte){
@@ -172,17 +154,55 @@ void I2CStop(){
     I2CWait();
 }
 
-//extract to LED information and cuts into into byte size
-void getLED(const LED * source, uint8_t * aim){
-    aim[0] = (uint8_t) (0x00FF & ((*source).Brightness.Red   >> 8));
-    aim[1] = (uint8_t) (0x00FF & ((*source).Brightness.Red   >> 0));
-    aim[2] = (uint8_t) (0x00FF & ((*source).Brightness.Green >> 8));
-    aim[3] = (uint8_t) (0x00FF & ((*source).Brightness.Green >> 0));
-    aim[4] = (uint8_t) (0x00FF & ((*source).Brightness.Blue  >> 8));
-    aim[5] = (uint8_t) (0x00FF & ((*source).Brightness.Blue  >> 0));
-    aim[6] = (*source).State;
-    aim[7] = (*source).LogDim;
-    aim[8] = (*source).Count;
+//extract to LED information and returns it
+uint8_t getLED(const LED * source, uint8_t byteNo){
+    switch(byteNo){
+        case 0: return (uint8_t) (0x00FF & ((*source).Brightness.Red   >> 8));
+        case 1: return (uint8_t) (0x00FF & ((*source).Brightness.Red   >> 0));
+        case 2: return (uint8_t) (0x00FF & ((*source).Brightness.Green >> 8));
+        case 3: return (uint8_t) (0x00FF & ((*source).Brightness.Green >> 0));
+        case 4: return (uint8_t) (0x00FF & ((*source).Brightness.Blue  >> 8));
+        case 5: return (uint8_t) (0x00FF & ((*source).Brightness.Blue  >> 0));
+        case 6: return (*source).State;
+        case 7: return (*source).LogDim;
+        case 8: return (*source).Count;
+        default: return 0;
+    }
+}
+
+
+//extracts the infromation for one LED and sends it over i2c
+void sendLED(const LED * source, uint8_t offset){
+    I2CStart();
+    uint8_t payload = (0x00 | I2C_SLAVE);
+    sendByte(payload); //Adress the LED Board
+    sendByte(offset);
+    for(int i = 0; i < LED_LENGTH; i++){
+        sendByte(getLED(source, i));
+    }
+    I2CStop();
+}
+
+//extracts the infromation for the globals and sends it over i2c
+void sendGlobals(const Machine * source){
+    I2CStart();
+    uint8_t payload = (0x00 | I2C_SLAVE);
+    sendByte(payload); //Adress the LED Board
+    sendByte(MM_LED_COUNTER_ADDR);
+    for(int i = 0; i < GLOBAL_LENGTH; i++){
+        switch(i){
+            case 0: payload = (*source).Counter; break;
+            case 1: payload = (*source).Enable; break;
+            case 2: payload = (*source).StepSize; break;
+            case 3: payload = (*source).AtMin_NumFrames; break;
+            case 4: payload = (*source).Ramp_NumFrames; break;
+            case 5: payload = (*source).AtMax_NumFrames; break;
+            case 6: payload = getConfigByte(source); break;
+            case 7: payload = (*source).UpdateDelay; break;
+        }
+        sendByte(payload);
+    }
+    I2CStop();
 }
 
 //generate config byte

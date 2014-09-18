@@ -59,7 +59,7 @@ typedef struct LED{
     uint8_t       Count;      //8
 } LED;
 
-typedef struct Machine {
+typedef struct Machine{
     uint8_t Counter;         //31
     uint8_t Enable;          //32
     uint8_t StepSize;        //33
